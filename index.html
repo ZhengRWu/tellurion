@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<!-- If the require doesn't work, include first the jQuery file
+<script src="jquery-3.0.0.min.js"></script>-->
+<script>window.$ = window.jQuery = require('./res/bookstrap/jquery-3.6.1.min.js');</script>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <!-- <meta http-equiv="Content-Security-Policy" -->
+  <!-- content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"> -->
+  <link href="./styles.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="./res/bookstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="./index.css">
+  <script src="./res/bookstrap/bootstrap.min.js"></script>
+  <link rel="stylesheet" href=".\res\layui\css\layui.css">
+  <script src=".\res\layui\layui.js"></script>
+
+  <title>T1</title>
+</head>
+
+
+<style>
+  .allow_drop {
+    -webkit-app-region: drag;
+  }
+</style>
+
+<body onload="load()" style="overflow:hidden">
+  <ul class="nav nav-tabs allow_drop" style="margin-top: 10px; margin-left: 5px;">
+    <li role="presentation" id="file_lib" style="-webkit-app-region: no-drag;" class="active"><a href="#"
+        name="file_lib">文件库</a></li>
+    <li role="presentation" id="download_list" style="-webkit-app-region: no-drag;"><a href="#"
+        name="download_list">下载列表</a></li>
+    <li role="presentation" id="my_share" style="-webkit-app-region: no-drag;"><a href="#" name="my_share">我的共享</a></li>
+    <li role="presentation" id="mini" style="margin-left: 469px;-webkit-app-region: no-drag;"><a href="#"
+        style="padding: 10px 4px;"><img style="width: 20px;" src="./res/page/login/images/minimum.png"
+          ondragstart="return false;" /></a></li>
+    <li role="presentation " id="close" style="-webkit-app-region: no-drag;"><a href="#" style="padding: 10px 6px;"><img
+          style="width: 15px;" src="./res/page/login/images/close.png" ondragstart="return false;" /></a></li>
+  </ul>
+  <div id="file_lib_page">
+    <div class="body-main">
+      <div class="table-main">
+        <table id="file_all" lay-filter="file_all"></table>
+      </div>
+    </div>
+
+    <script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+      <div style="position: absolute;width: 263px;display: flex;flex-direction: row;">
+        <input type="text" id="file_name" class="form-control" placeholder="文件名" aria-describedby="basic-addon1" style="width: 150px;">
+        <input type="text" id="user_name" class="form-control" placeholder="上传用户" aria-describedby="basic-addon1" style="width: 90px;margin-left: 10px;">
+      </div>
+      <button class="layui-btn layui-btn-sm layui-bg-blue" id="search_bt" style="margin-left: 259px;height: 34px;width: 71px;z-index: 999;">
+        搜索 
+      </button>
+    </div>
+  </script>
+
+    <script type="text/html" id="barDown">
+    <a class="layui-btn layui-btn-xs" lay-event="download">下载</a>
+  </script>
+    <script src="index.js"></script>
+  </div>
+  <div id="my_share_page">
+    <div class="share_main">
+      <div class="table_share_shutter">
+        <table id="share_all" lay-filter="test"></table>
+      </div>
+      <script type="text/html" id="barDel">
+        <a class="layui-btn layui-btn-xs" style="background-color: #FF5722;" lay-event="edit">删除</a>
+      </script>
+      <div class="self_info">
+
+        <div class="panel panel-default" style="margin-bottom:2px">
+          <div class="panel-heading">昵称</div>
+          <div class="panel-body" style="padding: 1px;padding-bottom: 17px;">
+            <div class="col-lg-6" style="margin-top: 18px;">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button">修</button>
+                </span>
+              </div><!-- /input-group -->
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">筛选</div>
+          <div class="panel-body" style="padding: 1px;padding-bottom: 17px;">
+            <div class="col-lg-6" style="margin-top: 18px;">
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="文件名">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="button">查</button>
+                </span>
+              </div><!-- /input-group -->
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default" style="margin-bottom:2px">
+          <div class="panel-heading">操作组</div>
+          <div class="panel-body" style="padding: 1px;padding-bottom: 17px;">
+            <button type="button" class="btn btn-default share_opera_btn btn-primary" id="upload">上传</button>
+            <button type="button" class="btn btn-default share_opera_btn btn-danger">删除</button>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+  <div id="my_download_page">
+    <div class="path_navigation">
+      <ol class="breadcrumb">
+        <li class="active"><a href="#">正在下载</a></li>
+        <li><a href="#">已完成</a></li>
+      </ol>
+    </div>
+    <div class="dl_main" style="overflow-x:hidden">
+      <!-- <div class="item_border" id="a1423214">
+        <div class="left_progress_box">
+          <div style="margin-top: 17px">cn_windows_10_consumer_editions_version_1909_updated_jan_2020_x64_dvd_47161f17.iso.emule</div>
+          <div class="text_detail">
+            <div>130MB/5.05GB</div>
+            <div style="justify-content: flex-end;">1000kb/s</div>
+          </div>
+          <div style="margin-top: 2px;">
+            <div class="layui-progress">
+              <div class="layui-progress-bar layui-bg-blue" lay-percent="40%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="right_btn">
+          <img class="btn_continue_pause" style="width: 18px;" src="./res/page/login/images/pause.png"/>
+          <img class="btn_continue_pause" src="./res/page/login/images/continue.png"/>
+        </div>
+      </div> -->
+      
+    </div>
+  </div>
+  <script type="module" src="./renderer.js"></script>
+  <script src="server.js"></script>
+
+</body>
+
+
+</html>
