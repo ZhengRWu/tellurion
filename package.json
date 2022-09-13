@@ -1,12 +1,12 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "tellurion",
+  "version": "0.1.0",
+  "description": "This is a local area network file transfer management system. It is used to help Labs and teams create Intranet transmission systems for fast and secure transmission.",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/ZhengRWu/tellurion",
   "keywords": [
     "Electron",
     "quick",
@@ -15,7 +15,7 @@
     "demo"
   ],
   "author": "zrwu",
-  "license": "CC0-1.0",
+  "license": "GPL-3.0",
   "devDependencies": {
     "electron": "^20.1.0"
   },
