@@ -11,7 +11,12 @@ const io = new Server(httpServer, {
 });
 
 async function big_file_send_chunk(fd, file_size, target_section, all_section) {
-    var peer_section = parseInt(file_size / all_section)
+    var peer_section;
+    if(all_section === 0){
+        peer_section = file_size
+    }else{
+        peer_section = parseInt(file_size / all_section)
+    }
     var start_num = target_section * peer_section
     if (target_section === all_section) {
         // 如果读文件末尾，则全部读取
@@ -84,7 +89,7 @@ io.on("connection", (socket) => {
             if (err) {
                 throw err
             }
-            var file_data = await big_file_send_chunk(fd, stats.size, data.counter, 512)
+            var file_data = await big_file_send_chunk(fd, stats.size, data.counter, data.chunks_num)
             if (file_data.state === true) {
                 console.log(file_data.data);
                 // var rand_data = crypto.randomBytes(1024*1024*10)
