@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 const httpServer = createServer();
 // var crypto = require('crypto');
 const fs = require('fs');
-const HashMap = require("hashmap")
+// const HashMap = require("hashmap")
 const {token_, url_} = require('./res/bin/data_init');
 
 const io = new Server(httpServer, {

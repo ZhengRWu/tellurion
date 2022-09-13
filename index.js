@@ -1,8 +1,11 @@
 const { ipcRenderer } = require('electron');
-const {token, url} = require('./res/bin/data_init');
+const { token, url } = require('./res/bin/data_init');
 const Download = require("./res/bin/client")
 const path = require('path');
 const { add_item } = require('./res/bin/item.js')
+const HashMap = require("hashmap")
+
+var h_index_map = new HashMap()
 
 function get_file_list(table, token) {
     table.render({
@@ -28,6 +31,22 @@ function get_file_list(table, token) {
 }
 
 var add_bt = () => {
+    $("#download_bt").click(() => {
+        var all = table.checkStatus('file_all');
+        console.log(all.data);
+        var data = all.data
+
+        ipcRenderer.invoke('main', 'open_selector_download').then((result) => {
+            if (result.canceled === false) {
+                var dir = result.filePaths[0]
+                for(var i=0;i<data.length;i++){
+                    console.log(data[i].file_name);
+                    download_file_start(dir, data[i].file_name, data[i].file_id, data[i].file_size)
+                }
+                
+            }
+        })
+    })
     document.getElementById("search_bt").addEventListener('click', function () {
         var user_name = $('#user_name').val()
         var file_name = $('#file_name').val()
@@ -87,15 +106,7 @@ function get_share_list(table, token) {
             , { field: 'note', title: '备注', width: 63 }
             , { fixed: 'right', title: '操作', width: 70, toolbar: '#barDel' }
         ]]
-        , done: function (res, curr, count) {
-            // var data_local = store.get('fileSys')
-            // for (var i of res.data) {
-            //     console.log(i);
-            //     if (!find_item(i.file_id, data_local)) {
-            //         data_local.push({file_id:i.file_id,file_path:i.file_path})
-            //     }
-            // }
-        }
+        , done: function (res, curr, count) { }
     });
 }
 
@@ -109,6 +120,8 @@ layui.use('table', function () {
     table = layui.table;
     //第一个实例
     get_file_list(table, token)
+
+
 
 
 });
@@ -159,8 +172,12 @@ function load() {
     })
 
     $("#upload").click(() => {
-        console.log(123);
         ipcRenderer.send('main', 'open_upload')
+    })
+
+    $("#share_delete").click(() => {
+        var all = table.checkStatus('share_all');
+        console.log(all.data);
     })
 
     $("#file_lib").attr("class", "")
@@ -172,6 +189,36 @@ function load() {
     $("#my_share_page").hide()
 }
 
+async function download_file_start(dir, file_name, file_id, file_size) {
+    down_path = path.join(dir, file_name)
+    h_index_map.set(file_id, down_path)
+
+    var id_date = add_item(file_name)
+    var render = { id_date: id_date, element: element }
+    // 向服务器请求目标file_id对应的用户的ip和port
+    $.ajax({
+        url: `http://${url}/get_target_ip`,
+        type: 'get',
+        dataType: 'json',
+        data: {
+            token: token,
+            file_id: file_id
+        },
+        success: function (response) {
+            if (response.code === 11000) {
+                var port = response.data.port
+                var ip = response.data.ip
+                var chunk_sum = response.data.chunk_sum
+                var flie_download = new Download(render, ip, port, chunk_sum, h_index_map.get(file_id), file_id, file_size)  // 这个地方之所以用h_index_map，是因为直接传down_path回导致每次传入都一样
+                flie_download.creat_socket()
+                flie_download.download()
+            }
+        }
+    })
+    console.log(123);
+
+}
+
 
 layui.use('table', function () {
     table = layui.table;
@@ -181,32 +228,11 @@ layui.use('table', function () {
     table.on('tool(file_all)', function (obj) {
         var data = obj.data;
         console.log(data)
-        ipcRenderer.invoke('main', 'open_selector_download_single').then((result) => {
+        ipcRenderer.invoke('main', 'open_selector_download').then((result) => {
             if (result.canceled === false) {
                 var dir = result.filePaths[0]
-                down_path = path.join(dir, data.file_name)
                 if (obj.event === 'download') {
-                    var id_date = add_item(data.file_name)
-                    var render = { id_date: id_date, element: element }
-                    // 向服务器请求目标file_id对应的用户的ip和port
-                    $.ajax({
-                        url: `http://${url}/get_target_ip`,
-                        type: 'get',
-                        dataType: 'json',
-                        data: {
-                            token: token,
-                            file_id: data.file_id
-                        },
-                        success: function (response) {
-                            if (response.code === 11000) {
-                                var port = response.data.port
-                                var ip = response.data.ip
-                                var flie_download = new Download(render, ip, port, 512, down_path, data.file_id,data.file_size)  //把id_date传入进行控制操作   element.progress('a1662890029545', '60%')
-                                flie_download.creat_socket()
-                                flie_download.download()
-                            }
-                        }
-                    })
+                    download_file_start(dir, data.file_name, data.file_id, data.file_size)
                 }
             }
         })

@@ -54,8 +54,11 @@
         <input type="text" id="file_name" class="form-control" placeholder="文件名" aria-describedby="basic-addon1" style="width: 150px;">
         <input type="text" id="user_name" class="form-control" placeholder="上传用户" aria-describedby="basic-addon1" style="width: 90px;margin-left: 10px;">
       </div>
-      <button class="layui-btn layui-btn-sm layui-bg-blue" id="search_bt" style="margin-left: 259px;height: 34px;width: 71px;z-index: 999;">
+      <button class="layui-btn layui-btn-sm layui-bg-blue" id="search_bt" style="margin-left: 259px;height: 34px;width: 71px;z-index: 998;">
         搜索 
+      </button>
+      <button class="layui-btn layui-btn-sm layui-bg-green" id="download_bt" style="margin-left: -1px;height: 34px;width: 71px;z-index: 999;">
+        下载 
       </button>
     </div>
   </script>
@@ -107,7 +110,7 @@
           <div class="panel-heading">操作组</div>
           <div class="panel-body" style="padding: 1px;padding-bottom: 17px;">
             <button type="button" class="btn btn-default share_opera_btn btn-primary" id="upload">上传</button>
-            <button type="button" class="btn btn-default share_opera_btn btn-danger">删除</button>
+            <button type="button" class="btn btn-default share_opera_btn btn-danger" id="share_delete">删除</button>
           </div>
         </div>
 
