@@ -75,7 +75,7 @@ ipcMain.on("main", async (event, arg) => {
 })
 
 ipcMain.handle('main', async (event, arg) => {
-  if(arg === "open_selector_download_single"){
+  if(arg === "open_selector_download"){
     var out = await dialog.showOpenDialog({ properties: ['openDirectory'] })
     return out
   }
@@ -92,6 +92,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,  //使支持node接口
       contextIsolation: false,
+      nodeIntegrationInWorker:true
       // enableRemoteModule: true
     }
   })

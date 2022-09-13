@@ -46,10 +46,10 @@ class Download {
 
         var that = this
 
-        
+
         $(`#${this.render.id_date}_pause`).click(() => {
-            pause_and_continue(SWICH.pause,that.render.id_date)
-            $(`#${that.render.id_date}_speed`).text("--/s") 
+            pause_and_continue(SWICH.pause, that.render.id_date)
+            $(`#${that.render.id_date}_speed`).text("--/s")
             that.pause()
         })
 
@@ -77,14 +77,14 @@ class Download {
         var counter = this.breakpoint
         var all_reciece_size = 0
 
-        pause_and_continue(SWICH.continue,that.render.id_date)
+        pause_and_continue(SWICH.continue, that.render.id_date)
 
         socket.on('pushMsg', (data) => {
-            if(data === "FNF"){
+            if (data === "FNF") {
                 var myNotification = new Notification('意外发生', {
                     body: '目标服务器文件不存在或移动位置'
                 })
-                pause_and_continue(SWICH.pause,that.render.id_date)
+                pause_and_continue(SWICH.pause, that.render.id_date)
                 taht.socket.close()
                 return
             }
@@ -97,9 +97,14 @@ class Download {
             $(`#${that.render.id_date}_num`).text(`${transform_data_toString(all_reciece_size)}/${that.file_size}`) // 有问题这个儿，无效
             old_time = new Date().getTime()
             // console.log(`recieve:${data.length};  (${counter}/${chunks_num})`);
-            that.render.element.progress(that.render.id_date, `${parseInt((counter / chunks_num) * 100)}%`)
+            if (counter === chunks_num && chunks_num === 0) {
+                that.render.element.progress(that.render.id_date, `${100}%`)
+            } else {
+                that.render.element.progress(that.render.id_date, `${parseInt((counter / chunks_num) * 100)}%`)
+            }
             // console.log(that.render.element);
             if (counter <= chunks_num) {
+                console.log(counter);
                 counter = counter + 1
                 that.breakpoint = counter
                 fs.open(save_path, 'a', function (err, fd) {
@@ -111,13 +116,20 @@ class Download {
                         null, function (err, writtenbytes) {
                             // console.log(writtenbytes + ' characters added to file');
                             if (counter < chunks_num + 1) {
-                                socket.emit('sendMsg', { counter: counter, file_id: that.file_id })
+                                socket.emit('sendMsg', { counter: counter, file_id: that.file_id, chunks_num: chunks_num })
+                            } else {
+                                fs.close(fd, (err) => {
+                                    if (err)
+                                        console.error("Failed to close file", err);
+                                    else
+                                        console.log("File Closed successfully");
+                                })
                             }
                         })
                 })
             }
         })
-        socket.emit('sendMsg', { counter: counter, file_id: that.file_id })
+        socket.emit('sendMsg', { counter: counter, file_id: that.file_id, chunks_num: chunks_num })
         old_time = new Date().getTime()
     }
 
