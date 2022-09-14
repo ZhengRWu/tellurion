@@ -6,6 +6,7 @@ const { add_item } = require('./res/bin/item.js')
 const HashMap = require("hashmap")
 
 var h_index_map = new HashMap()
+var if_del_or_add_some = false
 
 function get_file_list(table, token) {
     table.render({
@@ -39,13 +40,16 @@ var add_bt = () => {
         ipcRenderer.invoke('main', 'open_selector_download').then((result) => {
             if (result.canceled === false) {
                 var dir = result.filePaths[0]
-                for(var i=0;i<data.length;i++){
+                for (var i = 0; i < data.length; i++) {
                     console.log(data[i].file_name);
                     download_file_start(dir, data[i].file_name, data[i].file_id, data[i].file_size)
                 }
-                
+
             }
         })
+    })
+    $("#refresh_bt").click(() => {
+        get_file_list(table, token)
     })
     document.getElementById("search_bt").addEventListener('click', function () {
         var user_name = $('#user_name').val()
@@ -106,8 +110,32 @@ function get_share_list(table, token) {
             , { field: 'note', title: '备注', width: 63 }
             , { fixed: 'right', title: '操作', width: 70, toolbar: '#barDel' }
         ]]
-        , done: function (res, curr, count) { }
+        , done: function (res, curr, count) {
+         }
     });
+}
+
+function del_share_file(file_id_list) {
+    $.ajax({
+        url: `http://${url}/del_share_file`,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            token: token,
+            file_id_list: file_id_list
+        },
+        success: function (response) {
+            if (response.code === 11000) {
+                if_del_or_add_some = true
+                get_share_list(table, token)
+            } else {
+                var myNotification = new Notification('通知', {
+                    body: response.value
+                })
+                get_share_list(table, token)
+            }
+        }
+    })
 }
 
 var table;
@@ -120,10 +148,6 @@ layui.use('table', function () {
     table = layui.table;
     //第一个实例
     get_file_list(table, token)
-
-
-
-
 });
 
 layui.use('element', function () {
@@ -133,6 +157,11 @@ layui.use('element', function () {
 
 function load() {
     $("#file_lib").click(() => {
+
+        if (if_del_or_add_some === true) {
+            if_del_or_add_some = false
+            get_file_list(table, token)
+        }
         $("#file_lib").attr("class", "active")
         $("#download_list").attr("class", "")
         $("#my_share").attr("class", "")
@@ -168,6 +197,7 @@ function load() {
             var myNotification = new Notification('成功', {
                 body: '全部上传完毕!'
             })
+            if_del_or_add_some = true
         }
     })
 
@@ -177,16 +207,23 @@ function load() {
 
     $("#share_delete").click(() => {
         var all = table.checkStatus('share_all');
-        console.log(all.data);
+        var file_id_list = []
+        for (var item of all.data) {
+            file_id_list.push(item.file_id)
+        }
+        if (file_id_list.length === 0) {
+            return
+        }
+        del_share_file(file_id_list)
     })
 
     $("#file_lib").attr("class", "")
-    $("#download_list").attr("class", "active")
-    $("#my_share").attr("class", "")
+    $("#download_list").attr("class", "")
+    $("#my_share").attr("class", "active")
 
     $("#file_lib_page").hide()
-    $("#my_download_page").show()
-    $("#my_share_page").hide()
+    $("#my_download_page").hide()
+    $("#my_share_page").show()
 }
 
 async function download_file_start(dir, file_name, file_id, file_size) {
@@ -238,6 +275,12 @@ layui.use('table', function () {
         })
 
     });
+
+    table.on("tool(share_all)", function (obj) {
+        var data = obj.data;
+        console.log(data)
+        del_share_file([data.file_id])
+    })
 });
 
 

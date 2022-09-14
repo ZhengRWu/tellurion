@@ -19,7 +19,7 @@
     }
 </style>
 
-<body style="overflow:hidden">
+<body style="background-color:transparent;">
     <div class="panel panel-default">
         <div class="panel-heading allow_drop">上传</div>
         <img style="width: 15px;position: fixed;top: 14px;right: 18px;z-index: 999;-webkit-app-region: no-drag;"
@@ -28,15 +28,18 @@
             <button type="button" class="btn btn-default share_opera_btn btn-primary " id="choose">选择文件</button>
             <button type="button" class="btn btn-default share_opera_btn btn-danger " id="delete">删除</button>
             <button type="button" class="btn btn-default share_opera_btn btn-success " id="upload">上传</button>
-            <div class="" style="width: 100%;">
+            <div class="" style="width: 100%; overflow: auto;">
                 <table id="upload_all" lay-filter="upload_all"></table>
+            </div>
+            <div class="layui-progress" lay-filter="updata">
+                <div class="layui-progress-bar" lay-percent="0%"></div>
             </div>
         </div>
     </div>
 
     <script type="text/html" id="bar">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        <!-- <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a> -->
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     </script>
 
     <script src="upload.js"></script>

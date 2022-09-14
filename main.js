@@ -30,7 +30,8 @@ ipcMain.on("main", async (event, arg) => {
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true,  //使支持node接口
         contextIsolation: false,
-      }
+      },
+      icon: ("app.png")
     })
     loginWindow.loadFile("./res/page/login/login.html")
     // loginWindow.webContents.openDevTools()
@@ -62,10 +63,11 @@ ipcMain.on("main", async (event, arg) => {
         preload: path.join(__dirname, 'preload.js'),
         nodeIntegration: true,  //使支持node接口
         contextIsolation: false,
-      }
+      },
+      icon: ("app.png")
     })
     upload.loadFile("./res/page/upload/upload.html")
-    // upload.webContents.openDevTools()
+    upload.webContents.openDevTools()
   } else if (arg === "open_selector") {
     var out = await dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] })
     // console.log(out);
@@ -94,7 +96,8 @@ function createWindow() {
       contextIsolation: false,
       nodeIntegrationInWorker:true
       // enableRemoteModule: true
-    }
+    },
+    icon: ("app.png")
   })
 
 
@@ -177,6 +180,11 @@ function setTray() {
 app.whenReady().then(() => {
   createWindow()
 
+  //设置通知状态
+  if (process.platform === 'win32') {
+    app.setAppUserModelId("Tellurion")
+  }
+
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -193,3 +201,4 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+

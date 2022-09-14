@@ -22,16 +22,17 @@ function transform_data_toString(arr) {
 function updateRender(table, data) {
     table.render({
         elem: '#upload_all'
-        , height: 527
+        , height: 480
+        , limit: 1000
         , cols: [[{ type: 'checkbox', fixed: 'left' }
             , { field: 'file_name', title: '文件名', width: 160, sort: true, fixed: 'left' }
             , { field: 'file_size', title: '文件大小', width: 107, sort: true }
-            , { field: 'note', title: '备注', width: 197, edit: 'text' }
-            , { fixed: 'right', title: '操作', width: 122, toolbar: '#barDel' }
+            , { field: 'note', title: '备注', width: 237, edit: 'text' }
+            , { fixed: 'right', title: '操作', width: 72, toolbar: '#bar' }
         ]]
         , data: data
-        //,skin: 'line' //表格风格
         , even: true
+        // , page: true
     });
 }
 
@@ -50,12 +51,14 @@ ipcRenderer.on('renderer-upload', function (event, arg) { // 接收到Main进程
                 note: "",
                 LAY_CHECKED: true,
                 file_size_int: fileSizeInBytes,
-                file_path: file_list[i]
+                file_path: file_list[i],
+                local_id: Math.random()
             })
         }
 
         show_data = transform_data_toString(show_data)
 
+        console.log(show_data);
         updateRender(table, show_data)
     }
 })
@@ -71,7 +74,9 @@ var show_data = []
 layui.use('table', function () {
     table = layui.table;
     updateRender(table, [])
-    //展示已知数据
+    table.on('tool(upload_all)', function (obj) {
+        obj.del();
+    })
 });
 
 $("#close").click(() => {
@@ -85,6 +90,8 @@ $("#choose").click(() => {
 var btn_upload_class = "btn btn-default share_opera_btn btn-success"
 var btn_upload_stare = true // 这个按钮是否有效
 
+var element = layui.element;
+
 $("#upload").click(() => {
     var all = table.checkStatus('upload_all');
     var all_need_upload_num = all.data.length
@@ -92,8 +99,10 @@ $("#upload").click(() => {
         $("#upload").attr("class", `${btn_upload_class} disabled`)
         btn_upload_stare = false
 
+        var counter_upload = 0
+
         for (var i of all.data) {
-            console.log(i);
+            // console.log(i);
             $.ajax({
                 url: `http://${url}/upload_file_metadata`,
                 type: 'get',
@@ -108,6 +117,11 @@ $("#upload").click(() => {
                 success: function (response) {
                     if (response.code === 11000) {
                         all_need_upload_num--
+                        element.progress('updata', `${parseInt((counter_upload / all.data.length)*100)}%`)
+                        counter_upload++;
+                        console.log(counter_upload, all.data.length);
+                        console.log(parseInt(counter_upload / all.data.length));
+                        console.log(`${parseInt(counter_upload / all.data.length)}%`);
                         // var data_local = store.get('fileSys')
                         // data_local.push({
                         //     file_id: response.value,
@@ -128,4 +142,18 @@ $("#upload").click(() => {
 
         }
     }
+})
+
+$("#delete").click(() => {
+    var all = table.checkStatus('upload_all');
+    console.log(all);
+    for (var item of all.data) {
+        for (var i = 0; i < show_data.length; i++) {
+            if (show_data[i].local_id === item.local_id) {
+                show_data.splice(i, 1)
+                break
+            }
+        }
+    }
+    updateRender(table, show_data)
 })

@@ -60,6 +60,9 @@
       <button class="layui-btn layui-btn-sm layui-bg-green" id="download_bt" style="margin-left: -1px;height: 34px;width: 71px;z-index: 999;">
         下载 
       </button>
+      <button class="layui-btn layui-btn-sm layui-btn-primary" id="refresh_bt" style="margin-left: -1px;height: 34px;width: 47px;z-index: 999;">
+        刷新
+      </button>
     </div>
   </script>
 
@@ -71,7 +74,7 @@
   <div id="my_share_page">
     <div class="share_main">
       <div class="table_share_shutter">
-        <table id="share_all" lay-filter="test"></table>
+        <table id="share_all" lay-filter="share_all"></table>
       </div>
       <script type="text/html" id="barDel">
         <a class="layui-btn layui-btn-xs" style="background-color: #FF5722;" lay-event="edit">删除</a>
@@ -126,25 +129,6 @@
       </ol>
     </div>
     <div class="dl_main" style="overflow-x:hidden">
-      <!-- <div class="item_border" id="a1423214">
-        <div class="left_progress_box">
-          <div style="margin-top: 17px">cn_windows_10_consumer_editions_version_1909_updated_jan_2020_x64_dvd_47161f17.iso.emule</div>
-          <div class="text_detail">
-            <div>130MB/5.05GB</div>
-            <div style="justify-content: flex-end;">1000kb/s</div>
-          </div>
-          <div style="margin-top: 2px;">
-            <div class="layui-progress">
-              <div class="layui-progress-bar layui-bg-blue" lay-percent="40%"></div>
-            </div>
-          </div>
-        </div>
-        <div class="right_btn">
-          <img class="btn_continue_pause" style="width: 18px;" src="./res/page/login/images/pause.png"/>
-          <img class="btn_continue_pause" src="./res/page/login/images/continue.png"/>
-        </div>
-      </div> -->
-      
     </div>
   </div>
   <script type="module" src="./renderer.js"></script>
