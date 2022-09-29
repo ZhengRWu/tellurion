@@ -4,9 +4,11 @@ const Download = require("./res/bin/client")
 const path = require('path');
 const { add_item } = require('./res/bin/item.js')
 const HashMap = require("hashmap")
+const LocalDownload = require("./res/bin/local_download")
 
 var h_index_map = new HashMap()
 var if_del_or_add_some = false
+var local_download = new LocalDownload()
 
 function get_file_list(table, token) {
     table.render({
@@ -111,7 +113,7 @@ function get_share_list(table, token) {
             , { fixed: 'right', title: '操作', width: 70, toolbar: '#barDel' }
         ]]
         , done: function (res, curr, count) {
-         }
+        }
     });
 }
 
@@ -136,6 +138,22 @@ function del_share_file(file_id_list) {
             }
         }
     })
+}
+
+function slector_already_onready(index){
+    // 选择器：下载列表->正在下载/已完成
+    if(index === 0){
+        // 设置粗体
+        $("#tab_breadcrumb > li:nth-child(1) > a").attr("class","active overstriking_title")
+        $("#tab_breadcrumb > li:nth-child(2) > a").attr("class","")
+        $(".item_border").show()
+        $("#ready_download").hide()
+    }else if(index === 1){
+        $("#tab_breadcrumb > li:nth-child(1) > a").attr("class","")
+        $("#tab_breadcrumb > li:nth-child(2) > a").attr("class","active overstriking_title")
+        $(".item_border").hide()
+        $("#ready_download").show()
+    }
 }
 
 var table;
@@ -217,13 +235,24 @@ function load() {
         del_share_file(file_id_list)
     })
 
+    $("#tab_breadcrumb > li:nth-child(1) > a").click(function(){
+        slector_already_onready(0)
+    })
+    $("#tab_breadcrumb > li:nth-child(2) > a").click(function(){
+        slector_already_onready(1)
+    })
+
     $("#file_lib").attr("class", "")
-    $("#download_list").attr("class", "")
-    $("#my_share").attr("class", "active")
+    $("#download_list").attr("class", "active")
+    $("#my_share").attr("class", "")
 
     $("#file_lib_page").hide()
-    $("#my_download_page").hide()
-    $("#my_share_page").show()
+    $("#my_download_page").show()
+    $("#my_share_page").hide()
+
+    // 控制默认时，下载列表中是正在下载还是已完成
+    slector_already_onready(0)
+    console.log(local_download.get_item())
 }
 
 async function download_file_start(dir, file_name, file_id, file_size) {
@@ -257,9 +286,18 @@ async function download_file_start(dir, file_name, file_id, file_size) {
 }
 
 
+var already_data = [
+    {
+        file_name: "123",
+        file_size: "4mb",
+        note: "test1"
+    }
+
+] //已经下载的文件
+
+
 layui.use('table', function () {
     table = layui.table;
-    //第一个实例
     get_share_list(table, token)
     //监听行工具事件
     table.on('tool(file_all)', function (obj) {
@@ -281,9 +319,31 @@ layui.use('table', function () {
         console.log(data)
         del_share_file([data.file_id])
     })
+
+    table.render({
+        elem: '#already_table'
+        , height: 480
+        , limit: 1000
+        , cols: [[{ type: 'checkbox', fixed: 'left' }
+            , { field: 'file_name', title: '文件名', width: 230, sort: true, fixed: 'left' }
+            , { field: 'file_size', title: '文件大小', width: 107, sort: true }
+            , { field: 'note', title: '备注', width: 300 }
+            , { fixed: 'right', title: '操作', toolbar: '#already_table_bar' }
+        ]]
+        , data: already_data
+        , even: true
+        // , page: true
+    });
+
+    table.on('tool(already_table)', function (obj) {
+        if (obj.event === 'del_from_already') {
+            console.log(obj.data);
+            if (local_download.get_item() !==  undefined){
+                console.log(local_download.get_item());
+            }
+        }
+    })
 });
-
-
 
 
 // ipcRenderer.send('main', 'open_upload')

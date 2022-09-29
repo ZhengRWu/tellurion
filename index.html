@@ -123,13 +123,20 @@
   </div>
   <div id="my_download_page">
     <div class="path_navigation">
-      <ol class="breadcrumb">
-        <li class="active"><a href="#">正在下载</a></li>
-        <li><a href="#">已完成</a></li>
+      <ol class="breadcrumb" id ="tab_breadcrumb">
+        <li class=""><a href="#">正在下载</a></li>
+        <li class=""><a href="#">已完成</a></li>
       </ol>
     </div>
-    <div class="dl_main" style="overflow-x:hidden">
+    <div class="dl_main" id="present_download" style="overflow-x:hidden"></div>
+
+    <div class="dl_main" id="ready_download" style="overflow-x:hidden">
+      <table id="already_table" lay-filter="already_table"></table>
     </div>
+    <script type="text/html" id="already_table_bar">
+      <a class="layui-btn layui-btn-xs" lay-event="del_from_already" style="background-color: #D9534F;">删除</a>
+    </script>
+
   </div>
   <script type="module" src="./renderer.js"></script>
   <script src="server.js"></script>

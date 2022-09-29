@@ -1,5 +1,6 @@
 const { io } = require("socket.io-client")
 var fs = require('fs');
+const LocalDownload = require("../../res/bin/local_download")
 // const sleep = require("system-sleep")
 // const server_ip = "192.168.0.157"
 // const server_ip = "192.168.0.145"
@@ -43,6 +44,7 @@ class Download {
         this.save_path = save_path
         this.file_id = file_id
         this.file_size = file_size
+        this.local_download = new LocalDownload()
 
         var that = this
 
@@ -118,6 +120,8 @@ class Download {
                             if (counter < chunks_num + 1) {
                                 socket.emit('sendMsg', { counter: counter, file_id: that.file_id, chunks_num: chunks_num })
                             } else {
+                                $(`#${that.render.id_date}`).remove()  //下载完毕,删除下载项
+                                that.local_download.add_item({server_ip:that.server_ip, socket_server_port:that.socket_server_port, chunks_num:that.chunks_num, save_path:that.save_path, file_id:that.file_id, file_size:that.file_size})
                                 fs.close(fd, (err) => {
                                     if (err)
                                         console.error("Failed to close file", err);

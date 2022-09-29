@@ -60,24 +60,24 @@
     flex-direction: column;
 }
 
-.item_border{
+.item_border {
     width: 100%;
     height: 71px;
     flex-direction: row;
     display: flex;
 }
 
-.item_border:hover{
+.item_border:hover {
     background-color: #f1f1f1;
 }
 
-.path_navigation{
+.path_navigation {
     width: 100%;
     height: 28px;
     background-color: antiquewhite;
 }
 
-.text_detail{
+.text_detail {
     display: flex;
     flex-direction: row;
     margin-top: 10px;
@@ -85,21 +85,25 @@
     justify-content: space-between;
 }
 
-.right_btn{
+.right_btn {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 5%;
 }
 
-.left_progress_box{
+.left_progress_box {
     flex-direction: column;
     width: 95%;
     height: 100%;
     padding: 0 35px 0 23px;
 }
 
-.btn_continue_pause{
+.btn_continue_pause {
     margin-top: 10px;
     cursor: pointer;
+}
+
+.overstriking_title {
+    font-weight: bold;
 }

@@ -110,13 +110,6 @@ function createWindow() {
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 
-  const server_ip = "192.168.0.145"
-  const socket_server_port = "3000"
-  const index = 1
-  const target = "E:\\Project List\\electron\\t1"
-  const file_name = "ndvi_all.zip"
-
-
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     return {

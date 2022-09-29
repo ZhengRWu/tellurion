@@ -24,6 +24,9 @@ document.getElementById("mini").addEventListener("click", function () {
 const server_ip = "192.168.0.145"
 const socket_server_port = "3000"
 
+$('#dl_main').hide()
+$('#already_main').show()
+
 
 // var flie_download = new Download(server_ip, socket_server_port, 512, 'out.mov', "114325")
 // flie_download.creat_socket()
