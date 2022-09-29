@@ -94,6 +94,8 @@ io.on("connection", (socket) => {
                 console.log(file_data.data);
                 // var rand_data = crypto.randomBytes(1024*1024*10)
                 socket.emit("pushMsg", file_data.data)
+            }else if(file_data.state === false){
+                socket.emit("pushMsg", "END")
             }
         })
 
